@@ -1,0 +1,8 @@
+git init
+git config --global user.name AmitPandey45
+git config --global user.email amitpandeymca30@gmail.com
+git add .
+git status
+git commit -m "First commit"
+ git remote add origin https://github.com/AmitPandey45/counter-app.git
+ git push -u origin master
