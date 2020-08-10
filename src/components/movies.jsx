@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import MoviesTable from "./moviesTable";
 import Pagination from "./common/pagination";
 import ListGroup from "./common/listGroup";
@@ -48,10 +49,6 @@ class Movies extends Component {
     this.setState({ sortColumn });
   };
 
-  handleNewMovie = () => {
-    this.props.history.push("/movies/new");
-  };
-
   render() {
     const { length: count } = this.state.movies;
     const {
@@ -88,9 +85,13 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
-          <button className="btn btn-primary" onClick={this.handleNewMovie}>
+          <Link
+            to="/movies/new"
+            className="btn btn-primary"
+            style={{ marginBottom: 20 }}
+          >
             New Movie
-          </button>
+          </Link>
           <p>Showing {filteredMovies.length} movies in the database.</p>
           <MoviesTable
             movies={movies}

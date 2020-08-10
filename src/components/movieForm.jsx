@@ -7,7 +7,6 @@ import { getMovie, saveMovie } from "./../services/fakeMovieService";
 class MovieForm extends Form {
   state = {
     data: {
-      _id: "",
       title: "",
       genreId: "",
       numberInStock: "",
@@ -19,19 +18,31 @@ class MovieForm extends Form {
 
   componentDidMount() {
     const genres = getGenres();
-    const { match } = this.props;
-    let data = { ...this.state.data };
+    this.setState({ genres });
 
-    if (match.params.id !== "new") {
-      const movie = getMovie(match.params.id);
-      movie.genreId = movie.genre._id;
-      delete movie.genre;
-      data = { ...movie };
-    } else {
+    const movieId = this.props.match.params.id;
+    if (movieId === "new") {
+      const data = { ...this.state.data };
       data.genreId = genres[0]._id;
+      this.setState({ data });
+      return;
     }
-    console.log(this.state.data);
-    this.setState({ data, genres });
+
+    console.log("not new movie");
+    const movie = getMovie(movieId);
+    if (!movie) return this.props.history.replace("/not-found");
+    console.log("not invalid movie");
+    this.setState({ data: this.mapToViewModel(movie) });
+  }
+
+  mapToViewModel(movie) {
+    return {
+      _id: movie._id,
+      title: movie.title,
+      genreId: movie.genre._id,
+      numberInStock: Number(movie.numberInStock),
+      dailyRentalRate: Number(movie.dailyRentalRate),
+    };
   }
 
   handleGenreChange = (e) => {
@@ -43,80 +54,37 @@ class MovieForm extends Form {
   };
 
   schema = {
-    _id: Joi.string().allow(null, ""),
+    _id: Joi.string(),
     title: Joi.string().required().label("Title"),
-    genreId: Joi.string().allow(null, ""),
+    genreId: Joi.string().required().label("Genre"),
     numberInStock: Joi.number()
       .integer()
       .min(0)
       .max(100)
       .required()
-      .label("Number in Stock")
-      .options({
-        language: {
-          string: {
-            min: "must be larger than or equal to 0",
-          },
-          string: {
-            max: "must be less than or equal to 100",
-          },
-          any: { required: "must be a number" },
-        },
-      }),
+      .label("Number in Stock"),
     dailyRentalRate: Joi.number()
       .min(0)
       .max(10)
       .required()
-      .label("Daily Rental Rate")
-      .options({
-        language: {
-          string: {
-            min: "must be larger than or equal to 0",
-          },
-          string: {
-            min: "must be must be less than or equal to 10",
-          },
-          any: {
-            required: "must be a number",
-          },
-        },
-      }),
+      .label("Daily Rental Rate"),
   };
 
   doSubmit = () => {
-    console.log("Movie Form");
-    const data = { ...this.state.data };
-    console.log(data);
-    data.numberInStock = Number(data.numberInStock);
-    data.dailyRentalRate = Number(data.dailyRentalRate);
-    saveMovie(data);
+    saveMovie(this.state.data);
+    console.log(this.state.data);
+
     this.props.history.push("/movies");
   };
 
   render() {
-    const { genres, data } = this.state;
     return (
       <div>
         <h1>Movie</h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("title", "Title")}
-          <div className="form-group">
-            <label htmlFor="genre">Genre:</label>
-            <select
-              className="form-control"
-              id="genre"
-              name="genre"
-              onChange={this.handleGenreChange}
-              value={data.genreId}
-            >
-              {genres.map((genre) => (
-                <option key={genre._id} value={genre._id}>
-                  {genre.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          {this.renderInput("numberInStock", "Number in Stock")}
+          {this.renderSelect("genreId", "Genre", this.state.genres)}
+          {this.renderInput("numberInStock", "Number in Stock", "number")}
           {this.renderInput("dailyRentalRate", "Rate")}
           {this.renderButton("Save")}
         </form>
