@@ -118,7 +118,7 @@ class Movies extends Component {
     } = this.state;
     const { user } = this.props;
 
-    if (movies.count === 0) return <p>There are no movies in the database.</p>;
+    //if (movies.count === 0) return <p>There are no movies in the database.</p>;
 
     return (
       <div className="row">
