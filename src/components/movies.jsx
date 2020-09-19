@@ -129,32 +129,39 @@ class Movies extends Component {
             onItemSelect={this.handleGenreSelect}
           />
         </div>
-        <div className="col">
-          {user && (
-            <Link
-              to="/movies/new"
-              className="btn btn-primary"
-              style={{ marginBottom: 20 }}
-            >
-              New Movie
-            </Link>
-          )}
-          <SearchBox value={searchQuery} onChange={this.handleSearch} />
-          <p>Showing {totalCount} movies in the database.</p>
-          <MoviesTable
-            movies={data}
-            sortColumn={sortColumn}
-            onSort={this.handleSort}
-            onLike={this.handleLike}
-            onDelete={this.handleDelete}
-          />
-          <Pagination
-            itemsCount={totalCount}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            onPageChange={this.handlePageChange}
-          />
-        </div>
+        {movies.length === 0 && (
+          <div className="col">
+            <p>There are no movies in the database.</p>
+          </div>
+        )}
+        {movies.length > 0 && (
+          <div className="col">
+            {user && (
+              <Link
+                to="/movies/new"
+                className="btn btn-primary"
+                style={{ marginBottom: 20 }}
+              >
+                New Movie
+              </Link>
+            )}
+            <SearchBox value={searchQuery} onChange={this.handleSearch} />
+            <p>Showing {totalCount} movies in the database.</p>
+            <MoviesTable
+              movies={data}
+              sortColumn={sortColumn}
+              onSort={this.handleSort}
+              onLike={this.handleLike}
+              onDelete={this.handleDelete}
+            />
+            <Pagination
+              itemsCount={totalCount}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              onPageChange={this.handlePageChange}
+            />
+          </div>
+        )}
       </div>
     );
   }
